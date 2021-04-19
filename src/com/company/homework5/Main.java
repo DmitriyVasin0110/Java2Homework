@@ -11,9 +11,9 @@ public class Main {
         twoThreads();
     }
 
-    public static float[] calculate(float[] arr) {
+    public static float[] calculate(float[] arr, float startIndex) {
         for (int i = 0; i < arr.length; i++) {
-            arr[i] = (float) (arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+            arr[i] = (float) (arr[i] * Math.sin(0.2f + (i+startIndex)/ 5) * Math.cos(0.2f + (i+startIndex) / 5) * Math.cos(0.4f + (i+startIndex) / 2));
         }
         return arr;
     }
@@ -21,9 +21,8 @@ public class Main {
     public static void oneThread() {
         Arrays.fill(ARR, 1.0f);
         long a = System.currentTimeMillis();
-        calculate(ARR);
+        calculate(ARR, 0);
         System.out.println("Время работы метода с одним потоком: " + (System.currentTimeMillis() - a));
-        System.out.println(Arrays.toString(ARR));
     }
 
     public static void twoThreads() {
@@ -36,7 +35,7 @@ public class Main {
             @Override
             public void run() {
                 System.arraycopy(ARR, 0, arr1, 0, H);
-                calculate(arr1);
+                calculate(arr1, 0);
                 System.arraycopy(arr1, 0, ARR, 0, H);
             }
         });
@@ -46,9 +45,7 @@ public class Main {
             @Override
             public void run() {
                System.arraycopy(ARR, H, arr2, 0, H);
-                for (int j = 0, i = arr2.length; j < arr2.length; j++, i++) {
-                    arr2[j] = (float) (arr2[j] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
-                }
+               calculate(arr2, H );
                 System.arraycopy(arr2, 0, ARR, H, H);
             }
         });
